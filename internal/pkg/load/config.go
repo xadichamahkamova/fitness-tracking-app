@@ -4,21 +4,10 @@ import (
 	"github.com/xadichamahkamova/config-helper/function"
 )
 
-type PostgresConfig struct {
-	Host     string
-	Port     string
-	Password string
-	Database string
-}
-
-type ServiceConfig struct {
-	Host string
-	Port string
-}
-
 type Config struct {
-	Service  ServiceConfig
-	Postgres PostgresConfig
+	ServiceHost string `yaml:"service_host"`
+	ServicePost string `yaml:"service_port"`
+	Postgres    string `yaml:"postgres"`
 }
 
 func Load(path string) (*Config, error) {

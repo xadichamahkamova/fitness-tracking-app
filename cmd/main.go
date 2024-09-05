@@ -17,15 +17,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Configuration loaded")
 
 	db, err := pq.ConnectDB(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Connect to Postgresql")
 
 	queries := storage.New(db)
 	r := api.NewGin(queries)
 
-	addr := fmt.Sprintf(":%s", cfg.Service.Port)
+	addr := fmt.Sprintf(":%s", cfg.ServicePost)
 	r.Run(addr)
 }
