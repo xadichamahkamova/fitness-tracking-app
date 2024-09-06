@@ -19,5 +19,10 @@ func NewGin(queries *storage.Queries) *gin.Engine {
 	r.PUT("/users/:id", handler.UpdateUser)
 	r.DELETE("/users/:id", handler.DeleteUser)
 
+	r.POST("/password-reset/request", handler.PasswordResetRequest)
+	r.POST("/password-reset/verify", handler.VerifyResetToken)
+	r.POST("/password-reset/reset", handler.ResetPassword) 
+
+
 	return r
 }

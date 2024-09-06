@@ -1,5 +1,9 @@
-
 service_host: localhost
 service_port: 8080
 
 postgres: "postgres://postgres:1@localhost:5432/postgres?sslmode=disable"
+
+token_key: my-secret-key
+
+my_email: mahkamovahadija1810@gmail.com
+my_password: pjyt lamw cugl tidb

@@ -31,6 +31,12 @@ CREATE TABLE "images" (
   "url" varchar
 );
 
+CREATE TABLE "password_reset" (
+  "id" serial PRIMARY KEY,
+  "user_email" varchar,
+  "user_token" varchar
+);
+
 ALTER TABLE "workouts" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "exercises" ADD FOREIGN KEY ("workout_id") REFERENCES "workouts" ("id");

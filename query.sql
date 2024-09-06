@@ -23,3 +23,13 @@ WHERE id = $1;
 -- name: DeleteUser :exec 
 DELETE FROM users 
 WHERE id = $1;
+
+-- name: SavePasswordResetToken :exec
+INSERT INTO password_reset (user_email, user_token)
+VALUES($1, $2); 
+
+-- name: UpdateUserPassword :exec
+UPDATE users 
+    set 
+        password_hash = $2
+WHERE email = $1; 

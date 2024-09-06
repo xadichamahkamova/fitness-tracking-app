@@ -22,6 +22,12 @@ type Image struct {
 	Url    sql.NullString
 }
 
+type PasswordReset struct {
+	ID        int32
+	UserEmail sql.NullString
+	UserToken sql.NullString
+}
+
 type Set struct {
 	ID          int32
 	ExerciseID  sql.NullInt32

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/xadichamahkamova/fitness-tracking-app/storage"
+	"github.com/xadichamahkamova/hashing/hash"
 )
 
 type HandlerST struct {
@@ -20,6 +21,14 @@ func (h *HandlerST) CreateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	
+	password, err := hashing.HashPassword(input.PasswordHash.String)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	input.PasswordHash.String = password
+
 	user, err := h.Queries.CreateUser(context.Background(), input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

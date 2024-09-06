@@ -5,9 +5,12 @@ import (
 )
 
 type Config struct {
-	ServiceHost string `yaml:"service_host"`
-	ServicePost string `yaml:"service_port"`
-	Postgres    string `yaml:"postgres"`
+	ServiceHost   string `yaml:"service_host"`
+	ServicePost   string `yaml:"service_port"`
+	Postgres      string `yaml:"postgres"`
+	TokenKey      string `yaml:"token_key"`
+	EmailFrom     string `yaml:"my_email"`
+	EmailPassword string `yaml:"my_password"`
 }
 
 func Load(path string) (*Config, error) {

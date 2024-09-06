@@ -112,6 +112,21 @@ func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
 	return items, nil
 }
 
+const savePasswordResetToken = `-- name: SavePasswordResetToken :exec
+INSERT INTO password_reset (user_email, user_token)
+VALUES($1, $2)
+`
+
+type SavePasswordResetTokenParams struct {
+	UserEmail sql.NullString
+	UserToken sql.NullString
+}
+
+func (q *Queries) SavePasswordResetToken(ctx context.Context, arg SavePasswordResetTokenParams) error {
+	_, err := q.db.ExecContext(ctx, savePasswordResetToken, arg.UserEmail, arg.UserToken)
+	return err
+}
+
 const updateUser = `-- name: UpdateUser :exec
 UPDATE users 
     set 
@@ -135,5 +150,22 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
 		arg.Email,
 		arg.Profile,
 	)
+	return err
+}
+
+const updateUserPassword = `-- name: UpdateUserPassword :exec
+UPDATE users 
+    set 
+        password_hash = $2
+WHERE email = $1
+`
+
+type UpdateUserPasswordParams struct {
+	Email        sql.NullString
+	PasswordHash sql.NullString
+}
+
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
+	_, err := q.db.ExecContext(ctx, updateUserPassword, arg.Email, arg.PasswordHash)
 	return err
 }

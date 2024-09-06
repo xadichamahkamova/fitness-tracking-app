@@ -3,10 +3,13 @@ module github.com/xadichamahkamova/fitness-tracking-app
 go 1.22.6
 
 require (
+	github.com/form3tech-oss/jwt-go v3.2.5+incompatible
 	github.com/gin-gonic/gin v1.10.0
 	github.com/lib/pq v1.10.9
 	github.com/sqlc-dev/pqtype v0.3.0
 	github.com/xadichamahkamova/config-helper v0.0.0-20240905003429-190039717763
+	github.com/xadichamahkamova/hashing v0.1.1
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
 
 require (
@@ -31,10 +34,11 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.8.0 // indirect
-	golang.org/x/crypto v0.23.0 // indirect
+	golang.org/x/crypto v0.27.0 // indirect
 	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/text v0.18.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
