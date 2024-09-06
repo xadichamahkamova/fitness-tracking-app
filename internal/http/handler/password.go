@@ -34,7 +34,11 @@ func (h *HandlerST) PasswordResetRequest(c *gin.Context) {
 		return
 	}
 
-	// TODO: Send resetToken to user's email
+	err = h.Notification.SendEmail(input.Email, resetToken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Password reset email sent"})
 }

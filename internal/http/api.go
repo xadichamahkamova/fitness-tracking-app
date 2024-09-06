@@ -2,17 +2,22 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/xadichamahkamova/fitness-tracking-app/internal/email"
 	"github.com/xadichamahkamova/fitness-tracking-app/internal/http/handler"
+	"github.com/xadichamahkamova/fitness-tracking-app/internal/http/middleware"
 	"github.com/xadichamahkamova/fitness-tracking-app/storage"
 )
 
-func NewGin(queries *storage.Queries) *gin.Engine {
+func NewGin(queries *storage.Queries, notif email.NotificationRepo) *gin.Engine {
 
 	r := gin.Default()
 
 	handler := handler.HandlerST{
 		Queries: queries,
+		Notification: notif,
 	}
+	r.Use(middleware.AuthMiddleware())
+	
 	r.POST("/users", handler.CreateUser)
 	r.GET("/users/:id", handler.GetUser)
 	r.GET("/users", handler.ListUsers)

@@ -6,13 +6,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/xadichamahkamova/fitness-tracking-app/storage"
 	"github.com/xadichamahkamova/hashing/hash"
+	"github.com/xadichamahkamova/fitness-tracking-app/storage"
 )
-
-type HandlerST struct {
-	Queries *storage.Queries
-}
 
 func (h *HandlerST) CreateUser(c *gin.Context) {
 

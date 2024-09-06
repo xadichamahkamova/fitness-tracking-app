@@ -9,6 +9,7 @@ import (
 	config "github.com/xadichamahkamova/fitness-tracking-app/internal/pkg/load"
 	pq "github.com/xadichamahkamova/fitness-tracking-app/internal/pkg/postgres"
 	"github.com/xadichamahkamova/fitness-tracking-app/storage"
+	"github.com/xadichamahkamova/fitness-tracking-app/internal/email"
 )
 
 func main() {
@@ -25,8 +26,10 @@ func main() {
 	}
 	log.Println("Connect to Postgresql")
 
+	notif := email.NewNotificationRepo(*cfg)
+	
 	queries := storage.New(db)
-	r := api.NewGin(queries)
+	r := api.NewGin(queries, *notif)
 
 	addr := fmt.Sprintf(":%s", cfg.ServicePost)
 	r.Run(addr)
