@@ -31,6 +31,8 @@ func NewGin(queries *storage.Queries, notif email.NotificationRepo) *gin.Engine 
 	r.POST("/workout", handler.CreateWorkout)
 	r.GET("/workout/:id", handler.GetWorkoutByID)
 	r.GET("/workout/:user-id", handler.GetWorkoutByUserID)
+	r.PUT("/workout/:id", handler.UpdateWorkout)
+	r.DELETE("/workout/:id", handler.DeleteWorkout)
 
 	return r
 }

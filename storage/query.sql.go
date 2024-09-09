@@ -8,6 +8,7 @@ package storage
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/sqlc-dev/pqtype"
 )
@@ -77,6 +78,16 @@ WHERE id = $1
 
 func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, id)
+	return err
+}
+
+const deleteWorkout = `-- name: DeleteWorkout :exec
+DELETE FROM workouts
+WHERE id = $1
+`
+
+func (q *Queries) DeleteWorkout(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteWorkout, id)
 	return err
 }
 
@@ -252,5 +263,32 @@ type UpdateUserPasswordParams struct {
 
 func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
 	_, err := q.db.ExecContext(ctx, updateUserPassword, arg.Email, arg.PasswordHash)
+	return err
+}
+
+const updateWorkout = `-- name: UpdateWorkout :exec
+UPDATE workouts
+SET 
+    name = $2,
+    description = $3,
+    date = $4,
+    updated_at = NOW()
+WHERE id = $1
+`
+
+type UpdateWorkoutParams struct {
+	ID          int32
+	Name        string
+	Description sql.NullString
+	Date        time.Time
+}
+
+func (q *Queries) UpdateWorkout(ctx context.Context, arg UpdateWorkoutParams) error {
+	_, err := q.db.ExecContext(ctx, updateWorkout,
+		arg.ID,
+		arg.Name,
+		arg.Description,
+		arg.Date,
+	)
 	return err
 }

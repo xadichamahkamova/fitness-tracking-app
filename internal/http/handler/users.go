@@ -44,7 +44,7 @@ func (h *HandlerST) GetUser(c *gin.Context) {
 	
 	resp, err := h.Queries.GetUser(context.Background(), int32(idInt))
 	if err != nil {
-		c.JSON(404,  gin.H{"error": "User not found"})
+		c.JSON(404,  gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, resp)

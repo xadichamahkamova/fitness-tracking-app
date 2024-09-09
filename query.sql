@@ -48,3 +48,16 @@ WHERE user_id = $1;
 SELECT id, user_id, name, description, date, created_at, updated_at
 FROM workouts
 WHERE id = $1;
+
+-- name: UpdateWorkout :exec
+UPDATE workouts
+SET 
+    name = $2,
+    description = $3,
+    date = $4,
+    updated_at = NOW()
+WHERE id = $1;
+
+-- name: DeleteWorkout :exec
+DELETE FROM workouts
+WHERE id = $1;

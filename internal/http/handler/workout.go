@@ -57,3 +57,42 @@ func (h *HandlerST) GetWorkoutByID(c *gin.Context) {
 	}
 	c.JSON(200, resp)
 }
+
+
+func (h *HandlerST) UpdateWorkout(c *gin.Context) {
+
+	req := storage.UpdateWorkoutParams{}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	id := c.Param("id")
+	workoutID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}	
+	req.ID = int32(workoutID)
+	err = h.Queries.UpdateWorkout(context.Background(), req)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message":"Workout updated"})
+}
+
+func (h *HandlerST) DeleteWorkout(c *gin.Context) {
+
+	id := c.Param("id")
+	workoutID, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}	
+	err = h.Queries.DeleteWorkout(context.Background(), int32(workoutID))
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message":"Workout deleted"})
+}
