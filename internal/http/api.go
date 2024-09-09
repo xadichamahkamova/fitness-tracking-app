@@ -28,6 +28,9 @@ func NewGin(queries *storage.Queries, notif email.NotificationRepo) *gin.Engine 
 	r.POST("/password-reset/verify", handler.VerifyResetToken)
 	r.POST("/password-reset/reset", handler.ResetPassword) 
 
+	r.POST("/workout", handler.CreateWorkout)
+	r.GET("/workout/:id", handler.GetWorkoutByID)
+	r.GET("/workout/:user-id", handler.GetWorkoutByUserID)
 
 	return r
 }

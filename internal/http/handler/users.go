@@ -12,25 +12,25 @@ import (
 
 func (h *HandlerST) CreateUser(c *gin.Context) {
 
-	var input storage.CreateUserParams
-	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	req := storage.CreateUserParams{}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	
-	password, err := hashing.HashPassword(input.PasswordHash.String)
+	password, err := hashing.HashPassword(req.PasswordHash.String)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	input.PasswordHash.String = password
+	req.PasswordHash.String = password
 
-	user, err := h.Queries.CreateUser(context.Background(), input)
+	resp, err := h.Queries.CreateUser(context.Background(), req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(200, resp)
 }
 
 func (h *HandlerST) GetUser(c *gin.Context) {
@@ -38,25 +38,26 @@ func (h *HandlerST) GetUser(c *gin.Context) {
 	id := c.Param("id")
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := h.Queries.GetUser(context.Background(), int32(idInt))
+	
+	resp, err := h.Queries.GetUser(context.Background(), int32(idInt))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		c.JSON(404,  gin.H{"error": "User not found"})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(200, resp)
 }
 
 func (h *HandlerST) ListUsers(c *gin.Context) {
 
-	users, err := h.Queries.ListUsers(context.Background())
+	resp, err := h.Queries.ListUsers(context.Background())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, users)
+	c.JSON(200, resp)
 }
 
 func (h *HandlerST) UpdateUser(c *gin.Context) {
@@ -67,18 +68,19 @@ func (h *HandlerST) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	var input storage.UpdateUserParams
-	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	req := storage.UpdateUserParams{}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	input.ID = int32(idInt)
-	err = h.Queries.UpdateUser(context.Background(), input)
+	req.ID = int32(idInt)
+	err = h.Queries.UpdateUser(context.Background(), req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "User updated"})
+	c.JSON(200, gin.H{"message": "User updated"})
 }
 
 func (h *HandlerST) DeleteUser(c *gin.Context) {
@@ -86,13 +88,13 @@ func (h *HandlerST) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	err = h.Queries.DeleteUser(context.Background(), int32(idInt))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "User deleted"})
+	c.JSON(200, gin.H{"message": "User deleted"})
 }

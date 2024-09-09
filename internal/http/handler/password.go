@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"database/sql"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/xadichamahkamova/fitness-tracking-app/internal/http/token"
@@ -13,55 +12,44 @@ import (
 
 func (h *HandlerST) PasswordResetRequest(c *gin.Context) {
 
-	type request struct {
-		Email string `json:"email"`
-	}
-
-	var input request
-	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	req := storage.SavePasswordResetTokenParams{}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	resetToken := token.GenereteJWTToken(input.Email).RefreshToken
+	req.UserToken = token.GenereteJWTToken(req.UserEmail).RefreshToken
 
-	err := h.Queries.SavePasswordResetToken(context.Background(), storage.SavePasswordResetTokenParams{
-		UserEmail: input.Email,
-		UserToken: resetToken,
-	})
+	err := h.Queries.SavePasswordResetToken(context.Background(), req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = h.Notification.SendEmail(input.Email, resetToken)
+	err = h.Notification.SendEmail(req.UserEmail, req.UserToken)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Password reset email sent"})
+	c.JSON(200, gin.H{"message": "Password reset email sent"})
 }
 
 func (h *HandlerST) VerifyResetToken(c *gin.Context) {
 
-	type request struct {
-		Token string `json:"token"`
-	}
-
-	var input request
-	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var req string
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	_, err := token.ExtractClaim(input.Token)
+	_, err := token.ExtractClaim(req)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Token verified, proceed with password reset"})
+	c.JSON(200, gin.H{"message": "Token verified, proceed with password reset"})
 }
 
 func (h *HandlerST) ResetPassword(c *gin.Context) {
@@ -73,13 +61,13 @@ func (h *HandlerST) ResetPassword(c *gin.Context) {
 
 	var input request
 	if err := c.BindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
 	claims, err := token.ExtractClaim(input.Token)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -87,7 +75,7 @@ func (h *HandlerST) ResetPassword(c *gin.Context) {
 
 	hashedPassword, err := hashing.HashPassword(input.NewPassword)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -96,9 +84,9 @@ func (h *HandlerST) ResetPassword(c *gin.Context) {
 		PasswordHash: sql.NullString{String: hashedPassword, Valid: true},
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Password updated successfully"})
+	c.JSON(200, gin.H{"message": "Password updated successfully"})
 }
