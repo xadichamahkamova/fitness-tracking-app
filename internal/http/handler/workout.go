@@ -26,7 +26,7 @@ func (h *HandlerST) CreateWorkout(c *gin.Context) {
 
 func (h *HandlerST) GetWorkoutByUserID(c *gin.Context) {
 
-	req := c.Param("user-id")
+	req := c.Param("id")
 	user_id, err := strconv.Atoi(req)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})

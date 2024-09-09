@@ -208,6 +208,29 @@ func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
 	return items, nil
 }
 
+const loginUser = `-- name: LoginUser :one
+SELECT id, username, email, password_hash, profile FROM users 
+WHERE email=$1 AND password_hash=$2
+`
+
+type LoginUserParams struct {
+	Email        sql.NullString
+	PasswordHash sql.NullString
+}
+
+func (q *Queries) LoginUser(ctx context.Context, arg LoginUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, loginUser, arg.Email, arg.PasswordHash)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.PasswordHash,
+		&i.Profile,
+	)
+	return i, err
+}
+
 const savePasswordResetToken = `-- name: SavePasswordResetToken :exec
 INSERT INTO password_reset (user_email, user_token)
 VALUES($1, $2)

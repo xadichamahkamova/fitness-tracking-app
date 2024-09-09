@@ -12,6 +12,10 @@ INSERT INTO users (username, password_hash, email, profile)
 VALUES ($1, $2, $3, $4)
 RETURNING *;
 
+-- name: LoginUser :one
+SELECT * FROM users 
+WHERE email=$1 AND password_hash=$2;
+
 -- name: UpdateUser :exec
 UPDATE users 
     set 
