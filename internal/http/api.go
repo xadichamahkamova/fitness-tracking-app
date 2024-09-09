@@ -18,7 +18,8 @@
 		}
 		r.Use(middleware.AuthMiddleware())
 		
-		r.POST("/users", handler.Register)
+		r.POST("/users/register", handler.Register)
+		r.POST("/users/login", handler.LoginUser)
 		
 		r.GET("/users/:id", handler.GetUser)
 		r.GET("/users", handler.ListUsers)
