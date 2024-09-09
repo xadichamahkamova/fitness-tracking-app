@@ -6,33 +6,16 @@ package storage
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/sqlc-dev/pqtype"
 )
 
-type Exercise struct {
-	ID        int32
-	WorkoutID sql.NullInt32
-	Name      sql.NullString
-}
-
-type Image struct {
-	ID     int32
-	UserID sql.NullInt32
-	Url    sql.NullString
-}
-
 type PasswordReset struct {
 	ID        int32
-	UserEmail sql.NullString
-	UserToken sql.NullString
-}
-
-type Set struct {
-	ID          int32
-	ExerciseID  sql.NullInt32
-	Repetitions sql.NullInt32
-	Weight      sql.NullFloat64
+	UserEmail string
+	UserToken string
+	CreatedAt time.Time
 }
 
 type User struct {
@@ -44,7 +27,11 @@ type User struct {
 }
 
 type Workout struct {
-	ID     int32
-	UserID sql.NullInt32
-	Date   sql.NullString
+	ID          int32
+	UserID      int32
+	Name        string
+	Description sql.NullString
+	Date        time.Time
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }

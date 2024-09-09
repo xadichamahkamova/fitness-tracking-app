@@ -32,4 +32,19 @@ VALUES($1, $2);
 UPDATE users 
     set 
         password_hash = $2
-WHERE email = $1; 
+WHERE email = $1;  
+
+-- name: CreateWorkout :one
+INSERT INTO workouts (user_id, name, description)
+VALUES($1, $2, $3)
+RETURNING id, user_id, name, description, date, created_at, updated_at;
+
+-- name: GetWorkoutByUserID :many
+SELECT id, user_id, name, description, date, created_at, updated_at
+FROM workouts
+WHERE user_id = $1;
+
+-- name: GetWorkoutByID :one
+SELECT id, user_id, name, description, date, created_at, updated_at
+FROM workouts
+WHERE id = $1;

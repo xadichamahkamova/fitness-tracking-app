@@ -43,6 +43,33 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const createWorkout = `-- name: CreateWorkout :one
+INSERT INTO workouts (user_id, name, description)
+VALUES($1, $2, $3)
+RETURNING id, user_id, name, description, date, created_at, updated_at
+`
+
+type CreateWorkoutParams struct {
+	UserID      int32
+	Name        string
+	Description sql.NullString
+}
+
+func (q *Queries) CreateWorkout(ctx context.Context, arg CreateWorkoutParams) (Workout, error) {
+	row := q.db.QueryRowContext(ctx, createWorkout, arg.UserID, arg.Name, arg.Description)
+	var i Workout
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Description,
+		&i.Date,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users 
 WHERE id = $1
@@ -69,6 +96,64 @@ func (q *Queries) GetUser(ctx context.Context, id int32) (User, error) {
 		&i.Profile,
 	)
 	return i, err
+}
+
+const getWorkoutByID = `-- name: GetWorkoutByID :one
+SELECT id, user_id, name, description, date, created_at, updated_at
+FROM workouts
+WHERE id = $1
+`
+
+func (q *Queries) GetWorkoutByID(ctx context.Context, id int32) (Workout, error) {
+	row := q.db.QueryRowContext(ctx, getWorkoutByID, id)
+	var i Workout
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Description,
+		&i.Date,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getWorkoutByUserID = `-- name: GetWorkoutByUserID :many
+SELECT id, user_id, name, description, date, created_at, updated_at
+FROM workouts
+WHERE user_id = $1
+`
+
+func (q *Queries) GetWorkoutByUserID(ctx context.Context, userID int32) ([]Workout, error) {
+	rows, err := q.db.QueryContext(ctx, getWorkoutByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Workout
+	for rows.Next() {
+		var i Workout
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
+			&i.Description,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listUsers = `-- name: ListUsers :many
@@ -118,8 +203,8 @@ VALUES($1, $2)
 `
 
 type SavePasswordResetTokenParams struct {
-	UserEmail sql.NullString
-	UserToken sql.NullString
+	UserEmail string
+	UserToken string
 }
 
 func (q *Queries) SavePasswordResetToken(ctx context.Context, arg SavePasswordResetTokenParams) error {

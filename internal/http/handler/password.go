@@ -26,8 +26,8 @@ func (h *HandlerST) PasswordResetRequest(c *gin.Context) {
 	resetToken := token.GenereteJWTToken(input.Email).RefreshToken
 
 	err := h.Queries.SavePasswordResetToken(context.Background(), storage.SavePasswordResetTokenParams{
-		UserEmail: sql.NullString{String: input.Email, Valid: true},
-		UserToken: sql.NullString{String: resetToken, Valid: true},
+		UserEmail: input.Email,
+		UserToken: resetToken,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
