@@ -10,6 +10,11 @@ import (
 	hashing "github.com/xadichamahkamova/hashing/hash"
 )
 
+type ResetPassword struct {
+	Token       string `json:"token"`
+	NewPassword string `json:"new_password"`
+}
+
 func (h *HandlerST) PasswordResetRequest(c *gin.Context) {
 
 	req := storage.SavePasswordResetTokenParams{}
@@ -54,18 +59,13 @@ func (h *HandlerST) VerifyResetToken(c *gin.Context) {
 
 func (h *HandlerST) ResetPassword(c *gin.Context) {
 
-	type request struct {
-		Token       string `json:"token"`
-		NewPassword string `json:"new_password"`
-	}
-
-	var input request
-	if err := c.BindJSON(&input); err != nil {
+	req := ResetPassword{}
+	if err := c.BindJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	claims, err := token.ExtractClaim(input.Token)
+	claims, err := token.ExtractClaim(req.Token)
 	if err != nil {
 		c.JSON(401, gin.H{"error": err.Error()})
 		return
@@ -73,7 +73,7 @@ func (h *HandlerST) ResetPassword(c *gin.Context) {
 
 	email := claims["user_email"].(string)
 
-	hashedPassword, err := hashing.HashPassword(input.NewPassword)
+	hashedPassword, err := hashing.HashPassword(req.NewPassword)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
