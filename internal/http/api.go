@@ -16,6 +16,7 @@
 			Queries: queries,
 			Notification: notif,
 		}
+		
 		r.Use(middleware.AuthMiddleware())
 		
 		r.POST("/users/register", handler.Register)
